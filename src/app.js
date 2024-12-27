@@ -2,24 +2,26 @@ const express=require("express");
 
 const app=express();
 
-
-
-
-
-app.get("/user",(req,res)=>{
-    res.send("get api call ");
-});
-
-app.post("/user",(req,res)=>{
-    res.send({firstName:"Shreyash",lastName:"Gore"});
-});
-
-app.delete("/user",(req,res)=>{
-    res.send("delete api call ");
-});
-app.use("/user",(req,res)=>{
-    res.send("Hello hello hello ");
-});
+app.get("/user",(req,res,next)=>{
+    console.log("1st route");
+    next();
+    //res.send("Response !");
+},
+ (req,res,next)=>{
+    console.log("2nd route");
+    //res.send("2nd Response");
+    next();
+ },
+ (req,res,next)=>{
+    console.log("3rd route");
+    //res.send("3rd Response");
+    next();
+ },
+ (req,res,next)=>{
+    console.log("4nd route");
+    res.send("4th Response");
+    // next();
+ });
 
 
 
