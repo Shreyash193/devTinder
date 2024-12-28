@@ -2,26 +2,37 @@ const express=require("express");
 
 const app=express();
 
-app.get("/user",(req,res,next)=>{
-    console.log("1st route");
-    next();
-    //res.send("Response !");
-},
- (req,res,next)=>{
-    console.log("2nd route");
-    //res.send("2nd Response");
-    next();
- },
- (req,res,next)=>{
-    console.log("3rd route");
-    //res.send("3rd Response");
-    next();
- },
- (req,res,next)=>{
-    console.log("4nd route");
-    res.send("4th Response");
-    // next();
- });
+const {adminAuth,userAuth}=require("./middlewares/auth");
+
+app.use("/admin",adminAuth);
+
+app.use("/User",userAuth);
+
+app.get("/User/allUserData",(req,res)=>{
+
+    res.send("user data sent");
+  
+});
+
+app.get("/User/deleteallUserData",(req,res)=>{
+
+    res.send("user data deleted");
+  
+});
+
+app.get("/admin/getAllData",(req,res)=>{
+
+        res.send("All Data Sent");
+      
+});
+
+app.get("/admin/deleteUser",(req,res)=>{
+     
+    res.send("user is deleted");
+  
+});
+
+
 
 
 
