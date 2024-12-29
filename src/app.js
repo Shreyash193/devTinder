@@ -1,41 +1,47 @@
 const express=require("express");
-
+const {connectDB}=require("./config/database");
 const app=express();
+const User=require('./models/user');
 
-const {adminAuth,userAuth}=require("./middlewares/auth");
 
-app.use("/admin",adminAuth);
-
-app.use("/User",userAuth);
-
-app.get("/User/allUserData",(req,res)=>{
-
-    res.send("user data sent");
+app.post("/signup",async (req,res)=>{
+  // const userObj={
+  //     firstName:"Shreyash",
+  //     lastName:"Gore",
+  //     emailId:"shreyashgore193@gmail.com",
+  //     password:"Gore@123"
+  // }
+  //creating a new instance of user model
+  const user=new User({
+    firstName:"Samarth",
+    lastName:"Madale",
+    emailId:"samarthm@gmail.com",
+    password:"Madale@123"
+});
   
+  try{
+    await user.save();
+    res.send("user added successfully");
+  }
+  catch(err){
+    res.status(400).send("error in saving data");
+  }
 });
 
-app.get("/User/deleteallUserData",(req,res)=>{
-
-    res.send("user data deleted");
-  
-});
-
-app.get("/admin/getAllData",(req,res)=>{
-
-        res.send("All Data Sent");
-      
-});
-
-app.get("/admin/deleteUser",(req,res)=>{
-     
-    res.send("user is deleted");
-  
-});
-
-
-
-
-
-app.listen(3000,()=>{
+connectDB() 
+   .then(()=>{
+   console.log("database connected ");
+   app.listen(3000,()=>{
     console.log("server is listening on port 3000");
 });
+})
+.catch((err) => {
+  console.error("database cannot be connected");
+});
+
+
+
+
+
+
+
