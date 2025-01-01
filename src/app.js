@@ -2,26 +2,35 @@ const express=require("express");
 const {connectDB}=require("./config/database");
 const app=express();
 const User=require('./models/user');
+const {signupValidator}=require("./utils/validator");
+const bcrypt=require("bcrypt");
 
 app.use(express.json()); 
 
 app.post("/signup",async (req,res)=>{
-  //console.log(req.body);
-  // const userObj={
-  //     firstName:"Shreyash",
-  //     lastName:"Gore",
-  //     emailId:"shreyashgore193@gmail.com",
-  //     password:"Gore@123"
-  // }
-  //creating a new instance of user model
-  const user=new User(req.body);
-  
   try{
+  //valiadation a data
+  signupValidator(req);
+
+  const {firstName,lastName,emailId,password}=req.body;
+
+  //encrypting a password
+
+  const passwordHash=await bcrypt.hash(password,10);
+  console.log(passwordHash);
+  
+  //creating a new instance of user model
+  const user=new User({
+    firstName,
+    lastName,
+    emailId,
+    password:passwordHash,
+  });
     await user.save();
     res.send("user added successfully");
   }
   catch(err){
-    res.status(400).send("error in saving data");
+    res.status(400).send("ERROR : "+ err.message);
   }
 });
 
@@ -85,6 +94,43 @@ app.get("/userById",async (req,res)=>{
     }
     
 })
+
+//delete a user from database
+app.delete("/user",async(req,res)=>{
+  const userId=req.body._id;
+  try{
+    const users=await User.findByIdAndDelete(userId);
+    res.send("user is deleted successfully");
+  }
+  catch(err){
+    res.status(400).send("something went wrong");
+  }
+});
+
+app.patch("/user/:userId",async (req,res)=>{
+  const userId=req.params?.userId;
+  const data=req.body;
+  console.log(data);
+  try{
+    const ALLOWED_UPDATES=[
+    "photo","gender","about","age","skills"
+    ];
+
+    const isUpdateAllowed=Object.keys(data).every((k)=> ALLOWED_UPDATES.includes(k));
+
+    if(!isUpdateAllowed){
+      throw new Error("update not allowed");
+    }
+    await User.findByIdAndUpdate({_id:userId},data,{
+      runValidators:true
+    });
+    res.send("user updated successfully");
+  }
+  catch(err){
+    res.status(400).send("update failed + err.message");
+  }
+  
+});
 
 connectDB() 
    .then(()=>{
