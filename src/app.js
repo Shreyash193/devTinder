@@ -7,7 +7,7 @@ const bcrypt=require("bcrypt");
 const cookieParser=require("cookie-parser");
 const jwt=require("jsonwebtoken");
 const {userAuth}=require("./middlewares/auth");
-const user = require("./models/user");
+//const user = require("../models/user");
 
 
 app.use(express.json()); 
@@ -42,14 +42,14 @@ app.post("/signup",async (req,res)=>{
 
 app.post("/login",async (req,res)=>{
   try{
-    const {emailId,password}=req.body;
+    const {emailId,password}= req.body;
 
     const user=await User.findOne({emailId:emailId});
     if(!user){
       throw new Error("invalid crediantials");
     }
     
-    const isPasswordValid=await validatePassword(password);
+    const isPasswordValid=await user.validatePassword(password);
 
     if(isPasswordValid){
       //create jwt token
@@ -57,7 +57,9 @@ app.post("/login",async (req,res)=>{
       //console.log(token);
       
       //sending cookie back to user/browser
-      res.cookie("token",token);
+      res.cookie("token",token,{
+        expires:new Date(Date.now() + 8 * 3600000),
+      });
       res.send("login successfull!!")
     }
     else{
