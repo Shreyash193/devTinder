@@ -17,6 +17,7 @@ connectionRequestRouter
 -POST /request/review/rejected/:requestId
 
 userRouter
--GET /user/connections
 -GET /user/request
+-GET /user/connections
+
 -GET /user/feed -Gets you the profiles of other users on platform
