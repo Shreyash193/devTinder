@@ -12,9 +12,19 @@ const authRouter=require("./routes/auth");
 const profileRouter=require("./routes/profile");
 const requestRouter=require("./routes/request");
 const userRouter=require("./routes/user");
+const cors=require("cors");
 
 
+app.use(cors({
+  origin:"http://localhost:5173/login",
+  credentials:true,
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+  optionSuccessStatus:200
+}));
 
+app.options("*", cors());
+
+app.use(cors());
 app.use(express.json()); 
 app.use(cookieParser());
 
